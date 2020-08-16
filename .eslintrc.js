@@ -3,6 +3,7 @@ module.exports = {
   parserOptions: {
     project: 'iluvcoffee/tsconfig.json',
     sourceType: 'module',
+    ecmaVersion: 6,
   },
   plugins: ['@typescript-eslint/eslint-plugin'],
   extends: [
