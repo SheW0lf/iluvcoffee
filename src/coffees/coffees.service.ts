@@ -4,11 +4,7 @@
  *
  */
 
-import {
-  Injectable,
-  HttpException,
-  HttpStatus,
-} from '@nestjs/common';
+import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { Coffee } from './entities/coffees.entity';
 import { Flavors } from './coffees.data';
 
@@ -59,13 +55,13 @@ export class CoffeesService {
   }
 
   remove(id: number): Coffee[] {
-    const coffeeToDelete = this.findOne(id);
-    if (!coffeeToDelete) {
+    const coffeetoRemove = this.findOne(id);
+    if (!coffeetoRemove) {
       throw new HttpException(
         `Coffee with id: ${id} not found`,
         HttpStatus.NOT_FOUND,
       );
     }
-    return this.coffees.filter(coffee => coffee.id !== coffeeToDelete.id);
+    return this.coffees.filter(coffee => coffee.id !== coffeetoRemove.id);
   }
 }
