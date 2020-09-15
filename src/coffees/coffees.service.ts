@@ -6,62 +6,51 @@
 
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Coffee } from './entities/coffees.entity';
-import { Flavors } from './coffees.data';
-import { v4 as uuidv4 } from 'uuid';
 import { CreateCoffeeDto } from './dto/create-coffee.dto';
 import { UpdateCoffeeDto } from './dto/update-coffee.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 // any class with the Injectable decorator becomes a provider in app.module.ts.
 // Run nest g s in console to create a provider. (> nest generate service)
 @Injectable()
 export class CoffeesService {
-    private coffees: Coffee[] = Flavors;
+    constructor(
+        @InjectRepository(Coffee) //injects the coffee repository from the database for use instead of the hardcoded data
+        private readonly coffeeRepository: Repository<Coffee> //sets up the coffeeRepository variable from the Coffee repository data. Repository comes with a lot of very helpful CRUD methods
+    ){}
 
-    findAll(): Coffee[] {
-        return this.coffees;
+    async findAll(): Promise<Coffee[]>{
+        return await this.coffeeRepository.find();
     }
 
-    findOne(id: number): Coffee {
-        const coffee = this.coffees.find(coffee => coffee.id === id);
+    async findOne(id: number): Promise<Coffee> {
+        const coffee = await this.coffeeRepository.findOne(id)
         if (!coffee) {
             throw new NotFoundException(`Coffee with id: ${id} not found.`);
         }
         return coffee;
     }
 
-    getAllFlavors(): string[] {
-        const flavors = [];
-        this.coffees.map(coffee => {
-            flavors.push(coffee.flavors);
+    async update(id: number, updatedInfo: UpdateCoffeeDto): Promise<Coffee>{
+        const coffee = await this.coffeeRepository.preload({
+            id: +id,
+            ...updatedInfo
         });
-        return [...new Set(flavors.flat())]; // returns an array of unique values from flavors
-    }
 
-    update(id: number, { brand, flavors }: UpdateCoffeeDto): Coffee {
-        const coffee = this.findOne(id);
-        brand ? (coffee.brand = brand) : coffee.brand;
-        flavors
-            ? flavors.map(flavor => coffee.flavors.push(flavor))
-            : coffee.flavors;
-        return coffee;
-    }
-
-    create({ brand, flavors }: CreateCoffeeDto): Coffee {
-        const coffee: Coffee = {
-            id: uuidv4(),
-            brand,
-            flavors,
-        };
-
-        this.coffees.push(coffee);
-        return coffee;
-    }
-
-    remove(id: number): Coffee[] {
-        const coffeetoRemove = this.findOne(id);
-        if (!coffeetoRemove) {
-            throw new NotFoundException(`Coffee with id: ${id} not found`);
+        if(!coffee){
+            throw new NotFoundException(`Coffee #${id} not found`)
         }
-        return this.coffees.filter(coffee => coffee.id !== coffeetoRemove.id);
+        return this.coffeeRepository.save(coffee);
+    }
+
+    async create({ brand, flavors }: CreateCoffeeDto): Promise<Coffee> {
+        const coffee = await this.coffeeRepository.create({brand, flavors});
+        return this.coffeeRepository.save(coffee);
+    }
+
+    async remove(id: number): Promise<Coffee>{
+        const coffee = await this.findOne(id); // findOne will automatically throw an error if the id does not exist. 
+        return this.coffeeRepository.remove(coffee);
     }
 }
