@@ -34,17 +34,13 @@ export class CoffeesController {
     // }
 
     @Get()
-    findAll(): Coffee[] {
+    findAll(): Promise<Coffee[]> {
         return this.coffeesService.findAll();
     }
 
-    @Get('flavors')
-    getAllFalvors(): string[] {
-        return this.coffeesService.getAllFlavors();
-    }
 
     @Get(':id')
-    findOne(@Param('id', ParseIntPipe) id: number): Coffee {
+    findOne(@Param('id', ParseIntPipe) id: number): Promise<Coffee> {
         return this.coffeesService.findOne(id);
     }
 
@@ -56,20 +52,20 @@ export class CoffeesController {
     // }
 
     @Post()
-    create(@Body() coffeeData: CreateCoffeeDto): Coffee {
+    create(@Body() coffeeData: CreateCoffeeDto): Promise<Coffee> {
         return this.coffeesService.create(coffeeData);
     }
 
     @Patch(':id')
     update(
         @Param('id') id: number,
-        @Body('flavor') coffeeData: UpdateCoffeeDto,
-    ): Coffee {
+        @Body() coffeeData: UpdateCoffeeDto,
+    ): Promise<Coffee> {
         return this.coffeesService.update(id, coffeeData);
     }
 
     @Delete(':id')
-    remove(@Param('id') id: number): Coffee[] {
+    remove(@Param('id') id: number): Promise<Coffee> {
         return this.coffeesService.remove(id);
     }
 }
