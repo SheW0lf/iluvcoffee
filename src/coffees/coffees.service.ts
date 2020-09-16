@@ -11,6 +11,7 @@ import { UpdateCoffeeDto } from './dto/update-coffee.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Flavor } from './entities/flavor.entity';
+import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto';
 
 // any class with the Injectable decorator becomes a provider in app.module.ts.
 // Run nest g s in console to create a provider. (> nest generate service)
@@ -31,9 +32,11 @@ export class CoffeesService {
         return this.flavorRepository.create({name})
     }
 
-    async findAll(): Promise<Coffee[]>{
+    async findAll({offset, limit}: PaginationQueryDto): Promise<Coffee[]>{
         return await this.coffeeRepository.find({
-            relations: ['flavors']
+            relations: ['flavors'],
+            skip: offset,
+            take: limit
         });
     }
 

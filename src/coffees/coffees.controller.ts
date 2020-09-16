@@ -7,11 +7,13 @@ import {
     Patch,
     Delete,
     ParseIntPipe,
+    Query,
 } from '@nestjs/common';
 import { CoffeesService } from './coffees.service';
 import { Coffee } from './entities/coffees.entity';
 import { CreateCoffeeDto } from './dto/create-coffee.dto';
 import { UpdateCoffeeDto } from './dto/update-coffee.dto';
+import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto';
 
 interface Query {
     limit: number;
@@ -34,8 +36,8 @@ export class CoffeesController {
     // }
 
     @Get()
-    findAll(): Promise<Coffee[]> {
-        return this.coffeesService.findAll();
+    findAll(@Query() paginationQuery: PaginationQueryDto): Promise<Coffee[]> {
+        return this.coffeesService.findAll(paginationQuery);
     }
 
 
