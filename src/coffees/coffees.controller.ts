@@ -25,16 +25,6 @@ export class CoffeesController {
     // injecting the CoffeesService in the controller. Note that it is private and readonly to provide immutability
     constructor(private readonly coffeesService: CoffeesService) {}
 
-    // @Get('flavors') // route: GET coffees/flavors
-    // findAll(@Query() query: Query): string {
-    //   //queries limit and offset params from request. See '@Query example' at 'GET coffee flavors'
-    //   const { limit, offset } = query;
-    //   if (limit && offset) {
-    //     return `Using query params from the request URL. Limit: ${limit} offset: ${offset}`;
-    //   }
-    //   return 'returns all coffees';
-    // }
-
     @Get()
     findAll(@Query() paginationQuery: PaginationQueryDto): Promise<Coffee[]> {
         return this.coffeesService.findAll(paginationQuery);

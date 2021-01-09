@@ -9,7 +9,7 @@ import { Coffee } from './entities/coffees.entity';
 import { CreateCoffeeDto } from './dto/create-coffee.dto';
 import { UpdateCoffeeDto } from './dto/update-coffee.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, Connection } from 'typeorm';
 import { Flavor } from './entities/flavor.entity';
 import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto';
 
@@ -21,7 +21,8 @@ export class CoffeesService {
         @InjectRepository(Coffee) //injects the coffee repository from the database for use instead of the hardcoded data
         private readonly coffeeRepository: Repository<Coffee>, //sets up the coffeeRepository variable from the Coffee repository data. Repository comes with a lot of very helpful CRUD methods
         @InjectRepository(Flavor)
-        private readonly flavorRepository: Repository<Flavor>
+        private readonly flavorRepository: Repository<Flavor>,
+        private readonly connection: Connection
     ){}
 
     private async preloadFlavorByName(name: string): Promise<Flavor>{
@@ -71,5 +72,12 @@ export class CoffeesService {
     async remove(id: number): Promise<Coffee>{
         const coffee = await this.findOne(id); // findOne will automatically throw an error if the id does not exist. 
         return this.coffeeRepository.remove(coffee);
+    }
+
+    async recommendCoffee(coffee: Coffee){
+        const queryRunner = this.connection.createQueryRunner()
+
+        await queryRunner.connect()
+        await queryRunner.startTransaction()
     }
 }

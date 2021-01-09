@@ -6,7 +6,7 @@ import { Coffee } from './entities/coffees.entity';
 import { Flavor } from './entities/flavor.entity';
 
 @Module({ 
-    imports: [TypeOrmModule.forFeature([Coffee, Flavor])], // adds the entities to the coffee module for use
+    imports: [TypeOrmModule.forFeature([Coffee, Flavor, Event])], // adds the entities to the coffee module for use
     controllers: [CoffeesController], 
     providers: [CoffeesService] 
 }) 
